@@ -1,0 +1,18 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const genusRoutes = require('./routes/genus');
+const bodyParser = require('body-parser');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+mongoose.connect('mongodb://localhost:27017/animaliaTree', {
+    useNewUrlParser: true, 
+    useUnifiedTopology: true
+});
+
+app.use('/api/genus', genusRoutes);
+
+app.listen(5000, () => console.log('Server running on http://localhost:5000'));
