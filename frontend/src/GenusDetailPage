@@ -1,0 +1,48 @@
+import React, { useEffect, useState } from 'react';
+import GenusSlides from './GenusSlides';
+import ImageUpload from './ImageUpload';
+
+export default function GenusDetailPage({ genusId, refresh }) {
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+        fetch(`http://localhost:5000/api/genus/${genusId}`)
+            .then(res => res.json())
+            .then(setData);
+    }, [genusId]);
+
+    if (!data) return <div>Loading...</div>;
+
+    return (
+        <div style={{ border: "1px solid #abc", margin: "1em", padding: "1em" }}>
+            <h2>{data.latinName} ({data.englishName})</h2>
+            <div>
+                <GenusSlides slides={data.slides || []} />
+            </div>
+            <p>{data.description}</p>
+            <div>Era: {data.era}</div>
+            {data.locations && (
+                <div>
+                    <strong>Locations:</strong> {data.locations.join(', ')}
+                </div>
+            )}
+            <div>
+                <strong>Anatomical Drawings:</strong>
+                <ul>
+                    {data.anatomicalDrawings.map((url, i) => (
+                        <li key={i}><img src={url} alt={`drawing${i}`} width="80" /></li>
+                    ))}
+                </ul>
+            </div>
+            <div>
+                <strong>Images:</strong>
+                <ul>
+                    {data.images.map((url, i) => (
+                        <li key={i}><img src={url} alt={`img${i}`} width="80" /></li>
+                    ))}
+                </ul>
+                <ImageUpload genusId={genusId} onUpload={refresh} />
+            </div>
+        </div>
+    )
+}
