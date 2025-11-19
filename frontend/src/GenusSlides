@@ -1,0 +1,31 @@
+import React from "react";
+
+export default function GenusSlides({ slides }) {
+  const [current, setCurrent] = React.useState(0);
+  if (!slides || slides.length === 0) return <div>No slides for this genus.</div>;
+  return (
+    <div style={{ maxWidth: 500, margin: "auto" }}>
+      <div style={{ minHeight: 300, border: "1px solid #ccc", marginBottom: 8 }}>
+        <img src={slides[current].url} alt={slides[current].title || "Genus Slide"} style={{ maxWidth: "100%", maxHeight: 300 }} />
+        <div><b>{slides[current].title}</b></div>
+        <div>{slides[current].description}</div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {slides.map((slide, i) => (
+          <img
+            key={i}
+            src={slide.url}
+            alt={slide.title || `Slide ${i + 1}`}
+            width={60}
+            height={60}
+            style={{
+              border: current === i ? "2px solid blue" : "1px solid #ccc",
+              margin: "0 4px", cursor: "pointer"
+            }}
+            onClick={() => setCurrent(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
