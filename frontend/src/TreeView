@@ -1,0 +1,36 @@
+import React from 'react';
+import { FixedSizeList as List } from 'react-window';
+
+function TreeNode({ node, selectGenus, openEdit }) {
+    return (
+        <div style={{ marginLeft: 20 }}>
+            <span
+                style={{ color: 'blue', cursor: 'pointer', marginLeft: 4 }}
+                onClick={() => selectGenus(node._id)}
+            >
+                {node.latinName} ({node.englishName})
+            </span>
+            <button onClick={() => openEdit(node._id)} style={{ marginLeft: 8 }}>Add/Edit</button>
+        </div>
+    );
+}
+
+export default function TreeView({ roots, selectGenus, openEdit }) {
+    // Virtual list for buffered loading
+    const Row = ({ index, style }) => (
+        <div style={style}>
+            <TreeNode node={roots[index]} selectGenus={selectGenus} openEdit={openEdit} />
+        </div>
+    );
+
+    return (
+        <List
+            height={600}
+            itemCount={roots.length}
+            itemSize={35}
+            width={800}
+        >
+            {Row}
+        </List>
+    );
+}
