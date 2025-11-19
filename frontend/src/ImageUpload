@@ -1,0 +1,29 @@
+import React, { useState } from 'react';
+
+export default function ImageUpload({ genusId, onUpload }) {
+    const [url, setUrl] = useState('');
+
+    const handleUpload = async () => {
+        if (!url) return;
+        await fetch(`http://localhost:5000/api/genus/${genusId}/image`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+        });
+        setUrl('');
+        if (onUpload) onUpload();
+    };
+
+    return (
+        <div style={{ marginTop: 8 }}>
+            <input
+                type="text"
+                placeholder="Paste image URL"
+                value={url}
+                onChange={e => setUrl(e.target.value)}
+                style={{ width: 160 }}
+            />
+            <button onClick={handleUpload}>Add Image</button>
+        </div>
+    );
+}
