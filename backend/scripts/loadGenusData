@@ -1,0 +1,22 @@
+const mongoose = require('mongoose');
+const Genus = require('../models/Genus');
+const fs = require('fs');
+
+mongoose.connect('mongodb://localhost:27017/animaliaTree', {
+    useNewUrlParser: true, useUnifiedTopology: true
+});
+
+// Load a large genus dataset from genus_data.json (export from GBIF, CoL, or Wikidata)
+const data = JSON.parse(fs.readFileSync('genus_data.json'));
+async function run() {
+  for (const entry of data) {
+    await Genus.findOneAndUpdate(
+      { latinName: entry.latinName },
+      entry,
+      { upsert: true }
+    );
+  }
+  console.log('Bulk load completed');
+  process.exit();
+}
+run();
