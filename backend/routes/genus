@@ -1,0 +1,23 @@
+const mongoose = require('mongoose');
+
+const slideSchema = new mongoose.Schema({
+    url: String,
+    title: String,
+    description: String
+});
+
+const genusSchema = new mongoose.Schema({
+    latinName: String,
+    englishName: String,
+    parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Genus', default: null },
+    children: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Genus' }],
+    description: String,
+    anatomicalDrawings: [String], // URLs
+    locations: [String],
+    era: String,
+    images: [String], // URLs
+    distributionMap: String,
+    slides: [slideSchema]
+}, { timestamps: true });
+
+module.exports = mongoose.model('Genus', genusSchema);
