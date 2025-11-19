@@ -1,0 +1,52 @@
+import React, { useState } from 'react';
+import EditGenusSlides from './EditGenusSlides';
+
+export default function EditGenusDialog({ parentId, onClose, onEdited }) {
+    const [latinName, setLatinName] = useState('');
+    const [englishName, setEnglishName] = useState('');
+    const [description, setDescription] = useState('');
+    const [era, setEra] = useState('');
+    const [locations, setLocations] = useState('');
+    const [anatomicalDrawings, setDrawings] = useState('');
+    const [slides, setSlides] = useState([]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+            latinName,
+            englishName,
+            description,
+            era,
+            locations: locations.split(',').map(l => l.trim()),
+            anatomicalDrawings: anatomicalDrawings.split(',').map(a => a.trim()),
+            slides
+        };
+        if (parentId) payload.parent = parentId;
+
+        await fetch(`http://localhost:5000/api/genus`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        onEdited();
+    };
+
+    return (
+        <div style={{
+            position: 'fixed', top: 100, left: '40%', background: '#fff', border: '2px solid #aaa', padding: 20, zIndex: 100
+        }}>
+            <h3>{parentId ? "Add Child Genus" : "Add Root Genus"}</h3>
+            <form onSubmit={handleSubmit}>
+                <input value={latinName} onChange={e => setLatinName(e.target.value)} placeholder="Latin Name" required /><br />
+                <input value={englishName} onChange={e => setEnglishName(e.target.value)} placeholder="English Name" required /><br />
+                <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Description" /><br />
+                <input value={era} onChange={e => setEra(e.target.value)} placeholder="Era (e.g. Jurassic)" /><br />
+                <input value={locations} onChange={e => setLocations(e.target.value)} placeholder="Locations (comma-separated)" /><br />
+                <input value={anatomicalDrawings} onChange={e => setDrawings(e.target.value)} placeholder="Anatomical Drawings URLs (comma-separated)" /><br />
+                <EditGenusSlides slides={slides} onSlidesChanged={setSlides} />
+                <button type="submit">Save</button>
+                <button type="button" onClick={onClose} style={{ marginLeft: 8 }}>Cancel</button>
+            </form>
+        </div>
+    );
+}
