@@ -1,0 +1,48 @@
+import React, { useState, useEffect } from 'react';
+import TreeView from './TreeView';
+import GenusDetailPage from './GenusDetailPage';
+import EditGenusDialog from './EditGenusDialog';
+
+function App() {
+    const [roots, setRoots] = useState([]);
+    const [selectedGenus, setSelectedGenus] = useState(null);
+    const [editOpen, setEditOpen] = useState(false);
+
+    // Buffer/paged load roots
+    const fetchRoots = async () => {
+        const res = await fetch('http://localhost:5000/api/genus?limit=20&skip=0');
+        const data = await res.json();
+        setRoots(data);
+    };
+
+    useEffect(() => {
+        fetchRoots();
+    }, []);
+
+    const handleEdited = () => {
+        setEditOpen(false);
+        fetchRoots();
+    };
+
+    return (
+        <div>
+            <h1>Animalia Evolutionary Tree (Editable)</h1>
+            <TreeView roots={roots} selectGenus={setSelectedGenus} openEdit={setEditOpen} />
+            {selectedGenus && (
+                <GenusDetailPage genusId={selectedGenus} refresh={fetchRoots} />
+            )}
+            {editOpen && (
+                <EditGenusDialog
+                    parentId={selectedGenus}
+                    onClose={() => setEditOpen(false)}
+                    onEdited={handleEdited}
+                />
+            )}
+            <button onClick={() => setEditOpen(true)}>
+                Add Root Genus
+            </button>
+        </div>
+    );
+}
+
+export default App;
